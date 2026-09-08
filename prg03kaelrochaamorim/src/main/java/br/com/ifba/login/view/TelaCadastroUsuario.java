@@ -4,6 +4,9 @@
  */
 package br.com.ifba.login.view;
 
+//Importar o Validador de usuario
+import br.com.ifba.usuario.validar.ValidadorUsuario;
+
 //Pacote de telas de Sucesso e erro
 import javax.swing.JOptionPane;
 /**
@@ -227,6 +230,16 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(
             this,
             "As senhas não coincidem.",
+            "Erro",
+            JOptionPane.ERROR_MESSAGE
+        );
+        return;
+    }
+    //4.Verifica se o login contém palavra proibida
+    if (ValidadorUsuario.contemPalavraProibida(txtLoginCadastro.getText())) {
+        JOptionPane.showMessageDialog(
+            this,
+            "Login contém palavra não permitida",
             "Erro",
             JOptionPane.ERROR_MESSAGE
         );
