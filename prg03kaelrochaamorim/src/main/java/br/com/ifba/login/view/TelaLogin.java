@@ -1,5 +1,8 @@
 package br.com.ifba.login.view;
 
+//Importa a classe Usuario
+import br.com.ifba.usuario.entity.Usuario;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -126,14 +129,16 @@ public class TelaLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_txtSenhaActionPerformed
 
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
- // Pega o texto do Login
-        String login = txtLogin.getText();
- // Pega o texto da Senha
-        String senha = new String(txtSenha.getPassword());
- // Usa Variaveis para mostrar o resultado
-        lblResultado.setText(
-         "<html>Login: " + login +
-         "<br>Senha: " + senha + "</html>");
+
+// 1. instancia o objeto de dominio
+   Usuario usuario = new Usuario();
+
+// 2. captura e preenche login e senha
+   usuario.login = txtLogin.getText();
+   usuario.senha = new String(txtSenha.getPassword());
+
+// 3. atualiza o label de resultado com os dados vindos do objeto
+   lblResultado.setText("Login: " + usuario.login + " | Senha: " + usuario.senha);
  
     }//GEN-LAST:event_btnEntrarActionPerformed
 

@@ -9,6 +9,9 @@ import br.com.ifba.usuario.validar.ValidadorUsuario;
 
 //Pacote de telas de Sucesso e erro
 import javax.swing.JOptionPane;
+
+//Importa salvar conteudo de cadastro
+import br.com.ifba.usuario.entity.Usuario;
 /**
  *
  * @author milar
@@ -96,6 +99,11 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
         btnCadastrar.addActionListener(this::btnCadastrarActionPerformed);
 
         btnCancelarCadastro.setText("Cancelar");
+        btnCancelarCadastro.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnCancelarCadastroMouseClicked(evt);
+            }
+        });
         btnCancelarCadastro.addActionListener(this::btnCancelarCadastroActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -214,6 +222,19 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     private void btnCadastrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCadastrarMouseClicked
 // gerado automaticamente pelo NetBeans acima desta linha, não mexa
 
+    // 1. instancia o objeto de dominio
+    Usuario usuario = new Usuario();
+    
+    // 2. captura e preenche cada atributo
+    usuario.nome = txtNomeCompleto.getText();
+    usuario.cpf = txtCpf.getText();
+    usuario.genero = jComboBox1.getSelectedItem().toString();
+    usuario.dataNascimento = txtDataNascimento.getText();
+    usuario.telefone = txtTelefone.getText();
+    usuario.email = txtEmail.getText();
+    usuario.login = txtLoginCadastro.getText();
+    usuario.senha = new String(txtSenhaCadastro.getPassword());
+
     // 1. Verifica campos vazios
     if (existeCampoVazio()) {
         JOptionPane.showMessageDialog(
@@ -249,6 +270,18 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     // 3. Tudo certo -> sucesso
     exibirMensagemSucesso();
     }//GEN-LAST:event_btnCadastrarMouseClicked
+
+    private void btnCancelarCadastroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCancelarCadastroMouseClicked
+// TODO add your handling code here:
+
+// fecha a tela de cadastro
+    this.dispose();
+
+    // abre a tela de login
+    TelaLogin telaLogin = new TelaLogin();
+    telaLogin.setVisible(true);
+    
+    }//GEN-LAST:event_btnCancelarCadastroMouseClicked
 
     /**
      * @param args the command line arguments
