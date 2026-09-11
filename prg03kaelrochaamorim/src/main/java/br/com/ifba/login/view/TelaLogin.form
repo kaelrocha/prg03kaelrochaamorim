@@ -39,10 +39,7 @@
                       <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
                   </Group>
                   <Group type="103" alignment="0" groupAlignment="1" attributes="0">
-                      <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="lblResultado" min="-2" pref="165" max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="lblResultado" alignment="1" min="-2" pref="165" max="-2" attributes="0"/>
                       <Group type="103" alignment="0" groupAlignment="1" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
                               <Component id="lblSenha" min="-2" max="-2" attributes="0"/>
