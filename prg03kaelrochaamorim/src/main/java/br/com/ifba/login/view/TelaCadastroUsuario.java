@@ -226,14 +226,14 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     Usuario usuario = new Usuario();
     
     // 2. captura e preenche cada atributo
-    usuario.nome = txtNomeCompleto.getText();
-    usuario.cpf = txtCpf.getText();
-    usuario.genero = jComboBox1.getSelectedItem().toString();
-    usuario.dataNascimento = txtDataNascimento.getText();
-    usuario.telefone = txtTelefone.getText();
-    usuario.email = txtEmail.getText();
-    usuario.login = txtLoginCadastro.getText();
-    usuario.senha = new String(txtSenhaCadastro.getPassword());
+    usuario.setNome(txtNomeCompleto.getText());
+    usuario.setCpf(txtCpf.getText());
+    usuario.setGenero(jComboBox1.getSelectedItem().toString());
+    usuario.setDataNascimento(txtDataNascimento.getText());
+    usuario.setTelefone(txtTelefone.getText());
+    usuario.setEmail(txtEmail.getText());
+    usuario.setLogin(txtLoginCadastro.getText());
+    usuario.setSenha(new String(txtSenhaCadastro.getPassword()));
 
     // 1. Verifica campos vazios
     if (existeCampoVazio()) {
@@ -268,7 +268,7 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     }
 
     // 3. Tudo certo -> sucesso
-    exibirMensagemSucesso();
+    exibirMensagemSucesso(usuario);
     }//GEN-LAST:event_btnCadastrarMouseClicked
 
     private void btnCancelarCadastroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCancelarCadastroMouseClicked
@@ -341,10 +341,10 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
 // ===================================================================
 // FUNÇÃO 3: Exibe mensagem de sucesso no cadastro
 // ===================================================================
-    private void exibirMensagemSucesso() {
+   private void exibirMensagemSucesso(Usuario usuario) {
     JOptionPane.showMessageDialog(
         this,
-        "Cadastro realizado com sucesso!",
+        "Usuário " + usuario.getNome() + " cadastrado com sucesso!",
         "Cadastro",
         JOptionPane.INFORMATION_MESSAGE
     );
