@@ -134,11 +134,11 @@ public class TelaLogin extends javax.swing.JFrame {
    Usuario usuario = new Usuario();
 
 // 2. captura e preenche login e senha
-   usuario.login = txtLogin.getText();
-   usuario.senha = new String(txtSenha.getPassword());
+   usuario.setLogin(txtLogin.getText());
+   usuario.setSenha(new String(txtSenha.getPassword()));
 
 // 3. atualiza o label de resultado com os dados vindos do objeto
-   lblResultado.setText("Login: " + usuario.login + " | Senha: " + usuario.senha);
+   lblResultado.setText("Login: " + usuario.getLogin() + " | Senha: " + usuario.getSenha());
  
     }//GEN-LAST:event_btnEntrarActionPerformed
 
