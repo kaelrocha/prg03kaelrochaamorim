@@ -3,8 +3,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package br.com.ifba.usuario.entity;
+
+import br.com.ifba.usuario.interfaces.Autenticavel;
+
 // Classe de dominio que representa um Usuario do sistema
-public class Usuario {
+// Adcionado o implements autenticavel
+public class Usuario implements Autenticavel {
 
     private String nome;
     private String cpf;
@@ -88,6 +92,11 @@ public class Usuario {
 
     public String getSenha() {
         return senha;
+    }
+    
+    @Override
+    public boolean autenticar(String login, String senha) {
+        return this.login.equals(login) && this.senha.equals(senha);
     }
 }
 /**

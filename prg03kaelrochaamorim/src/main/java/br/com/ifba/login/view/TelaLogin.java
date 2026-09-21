@@ -3,6 +3,12 @@ package br.com.ifba.login.view;
 //Importa a classe Usuario
 import br.com.ifba.usuario.entity.Usuario;
 
+//Pacote de telas de Sucesso e erro
+import javax.swing.JOptionPane;
+
+//Importa a classe Usuario
+import br.com.ifba.usuario.entity.Usuario;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -131,14 +137,22 @@ public class TelaLogin extends javax.swing.JFrame {
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
 
 // 1. instancia o objeto de dominio
-   Usuario usuario = new Usuario();
+   String loginDigitado = txtLogin.getText();
+    String senhaDigitada = new String(txtSenha.getPassword());
 
-// 2. captura e preenche login e senha
-   usuario.setLogin(txtLogin.getText());
-   usuario.setSenha(new String(txtSenha.getPassword()));
+    Usuario usuario = new Usuario();
+    usuario.setLogin("admin");
+    usuario.setSenha("1234");
 
-// 3. atualiza o label de resultado com os dados vindos do objeto
-   lblResultado.setText("Login: " + usuario.getLogin() + " | Senha: " + usuario.getSenha());
+    boolean acessoLiberado = usuario.autenticar(loginDigitado, senhaDigitada);
+
+    if (acessoLiberado) {
+        lblResultado.setText("Acesso liberado!");
+        JOptionPane.showMessageDialog(this, "Acesso liberado!");
+    } else {
+        lblResultado.setText("Acesso negado!");
+        JOptionPane.showMessageDialog(this, "Acesso negado!");
+    }
  
     }//GEN-LAST:event_btnEntrarActionPerformed
 
