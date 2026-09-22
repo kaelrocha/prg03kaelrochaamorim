@@ -234,40 +234,36 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     usuario.setEmail(txtEmail.getText());
     usuario.setLogin(txtLoginCadastro.getText());
     usuario.setSenha(new String(txtSenhaCadastro.getPassword()));
+    
+    String confirmarSenha = new String(txtConfirmarSenha.getPassword());
 
-    // 1. Verifica campos vazios
-    if (existeCampoVazio()) {
-        JOptionPane.showMessageDialog(
-            this,
-            "Preencha todos os campos.",
-            "Erro",
-            JOptionPane.ERROR_MESSAGE
-        );
+    if (!ValidadorUsuario.camposPreenchidos(usuario.getNome(), usuario.getCpf(),
+            usuario.getDataNascimento(), usuario.getTelefone(), usuario.getEmail(),
+            usuario.getLogin(), usuario.getSenha(), confirmarSenha)) {
+        JOptionPane.showMessageDialog(this, "Preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
         return;
     }
 
-    // 2. Verifica se as senhas coincidem
-    if (senhasDiferentes()) {
-        JOptionPane.showMessageDialog(
-            this,
-            "As senhas não coincidem.",
-            "Erro",
-            JOptionPane.ERROR_MESSAGE
-        );
-        return;
-    }
-    //4.Verifica se o login contém palavra proibida
-    if (ValidadorUsuario.contemPalavraProibida(txtLoginCadastro.getText())) {
-        JOptionPane.showMessageDialog(
-            this,
-            "Login contém palavra não permitida",
-            "Erro",
-            JOptionPane.ERROR_MESSAGE
-        );
+    if (!ValidadorUsuario.cpfValido(usuario.getCpf())) {
+        JOptionPane.showMessageDialog(this, "CPF inválido.", "Erro", JOptionPane.ERROR_MESSAGE);
         return;
     }
 
-    // 3. Tudo certo -> sucesso
+    if (!ValidadorUsuario.senhaForte(usuario.getSenha())) {
+        JOptionPane.showMessageDialog(this, "Senha muito fraca.", "Erro", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    if (!ValidadorUsuario.senhasCoincidem(usuario.getSenha(), confirmarSenha)) {
+        JOptionPane.showMessageDialog(this, "As senhas não coincidem.", "Erro", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    if (ValidadorUsuario.contemPalavraProibida(usuario.getLogin())) {
+        JOptionPane.showMessageDialog(this, "Login contém palavra não permitida", "Erro", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
     exibirMensagemSucesso(usuario);
     }//GEN-LAST:event_btnCadastrarMouseClicked
 
@@ -307,36 +303,6 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new TelaCadastroUsuario().setVisible(true));
     }
-// ===================================================================
-// FUNÇÃO 1: Verifica se algum campo está vazio
-// ===================================================================
-    private boolean existeCampoVazio() {
-    if (txtNomeCompleto.getText().trim().isEmpty() ||
-        txtCpf.getText().trim().isEmpty() ||
-        txtDataNascimento.getText().trim().isEmpty() ||
-        txtTelefone.getText().trim().isEmpty() ||
-        txtEmail.getText().trim().isEmpty() ||
-        txtLoginCadastro.getText().trim().isEmpty() ||
-        new String(txtSenhaCadastro.getPassword()).trim().isEmpty() ||
-        new String(txtConfirmarSenha.getPassword()).trim().isEmpty()) {
-
-        return true;
-    }
-    return false;
-}
-
-// ===================================================================
-// FUNÇÃO 2: Verifica se a senha é diferente da confirmação
-// ===================================================================
-    private boolean senhasDiferentes() {
-    String senha = new String(txtSenhaCadastro.getPassword());
-    String confirmarSenha = new String(txtConfirmarSenha.getPassword());
-
-    if (!senha.equals(confirmarSenha)) {
-        return true;
-    }
-    return false;
-}
 
 // ===================================================================
 // FUNÇÃO 3: Exibe mensagem de sucesso no cadastro
