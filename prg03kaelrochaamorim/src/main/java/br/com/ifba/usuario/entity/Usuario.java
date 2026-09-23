@@ -4,7 +4,12 @@
  */
 package br.com.ifba.usuario.entity;
 
+//Importa classe Personagem
+import br.com.ifba.personagem.entity.Personagem;
+
 import br.com.ifba.usuario.interfaces.Autenticavel;
+
+
 
 // Classe de dominio que representa um Usuario do sistema
 // Adcionado o implements autenticavel
@@ -18,6 +23,7 @@ public class Usuario implements Autenticavel {
     private String email;
     private String login;
     private String senha;
+    private Personagem personagem;
     
 //Constructo sem atributos    
     public Usuario() {} 
@@ -29,6 +35,13 @@ public class Usuario implements Autenticavel {
     this.login = login;
     this.senha = senha;
 }
+    public Personagem getPersonagem() {
+        return personagem;
+    }
+    
+    public void setPersonagem(Personagem personagem) {
+        this.personagem = personagem;
+    }
 
     public void setNome(String nome) {
         this.nome = nome;
@@ -99,6 +112,8 @@ public class Usuario implements Autenticavel {
         return this.login.equals(login) && this.senha.equals(senha);
     }
 }
+
+
 /**
  *
  * @author milar
