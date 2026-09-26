@@ -1,29 +1,19 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package br.com.ifba.personagem.entity;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Personagem {
+public abstract class Personagem {
 
     private String nome;
     private int nivel;
-    private TipoPersonagem tipo;
     private List<Item> inventario;
 
-    public Personagem() {
-        this.inventario = new ArrayList<>();
-        this.nivel = 1; // valor inicial padrão
-    }
-
-    public Personagem(String nome, TipoPersonagem tipo) {
-        this();
+    public Personagem(String nome) {
         this.nome = nome;
-        this.tipo = tipo;
+        this.nivel = 1;
+        this.inventario = new ArrayList<>();
     }
 
     public String getNome() {
@@ -42,20 +32,10 @@ public class Personagem {
         this.nivel = nivel;
     }
 
-    public TipoPersonagem getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(TipoPersonagem tipo) {
-        this.tipo = tipo;
-    }
-
-    // método que adiciona item — a lista nunca é exposta diretamente
     public void adicionarItem(Item item) {
         this.inventario.add(item);
     }
 
-    // devolve uma cópia não-modificável, protegendo o encapsulamento
     public List<Item> getInventario() {
         return Collections.unmodifiableList(inventario);
     }
@@ -63,4 +43,7 @@ public class Personagem {
     public int quantidadeItens() {
         return inventario.size();
     }
+
+    // método abstrato: cada filha decide sua própria fórmula de dano
+    public abstract int calcularDano();
 }

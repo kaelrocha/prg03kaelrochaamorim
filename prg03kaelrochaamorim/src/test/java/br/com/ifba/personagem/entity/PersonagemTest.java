@@ -11,21 +11,21 @@ public class PersonagemTest {
 
     @Test
     void personagemRecemCriado_deveNascerComNivelUm() {
-        Personagem personagem = new Personagem("Thalor", TipoPersonagem.GUERREIRO);
+        Personagem personagem = new Guerreiro("Thalor");
 
         assertEquals(1, personagem.getNivel());
     }
 
     @Test
     void personagemRecemCriado_deveNascerComInventarioVazio() {
-        Personagem personagem = new Personagem("Thalor", TipoPersonagem.GUERREIRO);
+        Personagem personagem = new Guerreiro("Thalor");
 
         assertEquals(0, personagem.quantidadeItens());
     }
 
     @Test
     void adicionarItem_deveFazerAListaCrescer() {
-        Personagem personagem = new Personagem("Thalor", TipoPersonagem.GUERREIRO);
+        Personagem personagem = new Guerreiro("Thalor");
         Item espada = new Item("Espada Longa", 150);
 
         personagem.adicionarItem(espada);
@@ -35,7 +35,7 @@ public class PersonagemTest {
 
     @Test
     void adicionarVariosItens_deveAcumularNaLista() {
-        Personagem personagem = new Personagem("Thalor", TipoPersonagem.GUERREIRO);
+        Personagem personagem = new Guerreiro("Thalor");
         personagem.adicionarItem(new Item("Espada Longa", 150));
         personagem.adicionarItem(new Item("Escudo de Ferro", 80));
         personagem.adicionarItem(new Item("Poção de Vida", 20));
@@ -45,7 +45,7 @@ public class PersonagemTest {
 
     @Test
     void getInventario_deveRetornarOsItensAdicionados() {
-        Personagem personagem = new Personagem("Thalor", TipoPersonagem.GUERREIRO);
+        Personagem personagem = new Guerreiro("Thalor");
         Item espada = new Item("Espada Longa", 150);
         personagem.adicionarItem(espada);
 
@@ -54,18 +54,11 @@ public class PersonagemTest {
 
     @Test
     void getInventario_naoDevePermitirModificacaoExterna() {
-        Personagem personagem = new Personagem("Thalor", TipoPersonagem.GUERREIRO);
+        Personagem personagem = new Guerreiro("Thalor");
         personagem.adicionarItem(new Item("Espada Longa", 150));
 
         assertThrows(UnsupportedOperationException.class, () -> {
             personagem.getInventario().add(new Item("Item Hackeado", 999));
         });
-    }
-
-    @Test
-    void getTipo_deveRetornarOTipoDefinidoNoConstrutor() {
-        Personagem personagem = new Personagem("Elyria", TipoPersonagem.MAGO);
-
-        assertEquals(TipoPersonagem.MAGO, personagem.getTipo());
     }
 }
