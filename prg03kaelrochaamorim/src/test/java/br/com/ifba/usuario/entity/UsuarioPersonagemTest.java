@@ -5,7 +5,9 @@
 package br.com.ifba.usuario.entity;
 
 import br.com.ifba.personagem.entity.Personagem;
-import br.com.ifba.personagem.entity.TipoPersonagem;
+import br.com.ifba.personagem.entity.Guerreiro;
+import br.com.ifba.personagem.entity.Mago;
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,7 +16,7 @@ public class UsuarioPersonagemTest {
     @Test
     void getPersonagem_deveRetornarOMesmoObjetoQueFoiSetado() {
         Usuario usuario = new Usuario();
-        Personagem personagem = new Personagem("Thalor", TipoPersonagem.GUERREIRO);
+        Personagem personagem = new Guerreiro("Thalor");
 
         usuario.setPersonagem(personagem);
 
@@ -24,7 +26,7 @@ public class UsuarioPersonagemTest {
     @Test
     void getPersonagem_deveRetornarNomeCorretoDoPersonagemAssociado() {
         Usuario usuario = new Usuario();
-        Personagem personagem = new Personagem("Elyria", TipoPersonagem.MAGO);
+        Personagem personagem = new Mago("Elyria");
 
         usuario.setPersonagem(personagem);
 
