@@ -5,6 +5,10 @@ public class Guerreiro extends Personagem {
     public Guerreiro(String nome) {
         super(nome);
     }
+    
+public Guerreiro(String nome, int nivelInicial) {
+    super(nome, nivelInicial);
+}
 
     @Override
     public int calcularDano() {

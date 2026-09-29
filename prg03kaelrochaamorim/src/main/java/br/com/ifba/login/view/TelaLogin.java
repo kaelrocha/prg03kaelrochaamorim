@@ -18,7 +18,9 @@ import br.com.ifba.usuario.entity.Usuario;
  *
  * @author milar
  */
+
 public class TelaLogin extends javax.swing.JFrame {
+    
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaLogin.class.getName());
 
@@ -167,6 +169,22 @@ public class TelaLogin extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        // ---- Task 03: demonstração de polimorfismo ----
+    br.com.ifba.personagem.entity.Personagem guerreiro = new br.com.ifba.personagem.entity.Guerreiro("Thalor");
+    guerreiro.setNivel(2);
+
+    br.com.ifba.personagem.entity.Personagem mago = new br.com.ifba.personagem.entity.Mago("Elyria");
+    mago.setNivel(2);
+
+    int danoGuerreiro = br.com.ifba.personagem.entity.PersonagemService.processarDano(guerreiro);
+    int danoMago = br.com.ifba.personagem.entity.PersonagemService.processarDano(mago);
+
+    System.out.println("Dano do guerreiro: " + danoGuerreiro);
+    System.out.println("Dano do mago: " + danoMago);
+    // ---- fim da demonstração ----
+
+    /* Set the Nimbus look and feel */
+        
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
