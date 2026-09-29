@@ -15,6 +15,13 @@ public abstract class Personagem {
         this.nivel = 1;
         this.inventario = new ArrayList<>();
     }
+    
+// sobrecarga: permite definir o nível inicial
+    public Personagem(String nome, int nivelInicial) {
+    this.nome = nome;
+    this.nivel = nivelInicial;
+    this.inventario = new ArrayList<>();
+}
 
     public String getNome() {
         return nome;
