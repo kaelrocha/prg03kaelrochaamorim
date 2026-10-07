@@ -12,6 +12,8 @@ import javax.swing.JOptionPane;
 
 //Importa salvar conteudo de cadastro
 import br.com.ifba.usuario.entity.Usuario;
+
+import br.com.ifba.usuario.entity.RepositorioUsuarioEmMemoria;
 /**
  *
  * @author milar
@@ -19,6 +21,7 @@ import br.com.ifba.usuario.entity.Usuario;
 public class TelaCadastroUsuario extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaCadastroUsuario.class.getName());
+    private final RepositorioUsuarioEmMemoria repositorio = new RepositorioUsuarioEmMemoria();
 
     /**
      * Creates new form TelaCadastroUsuario
@@ -264,7 +267,12 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
         return;
     }
 
-    exibirMensagemSucesso(usuario);
+    try {
+        repositorio.cadastrar(usuario);
+        exibirMensagemSucesso(usuario);
+    } catch (IllegalArgumentException e) {
+        JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnCadastrarMouseClicked
 
     private void btnCancelarCadastroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCancelarCadastroMouseClicked

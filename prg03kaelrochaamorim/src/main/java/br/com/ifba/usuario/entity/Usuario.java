@@ -9,6 +9,8 @@ import br.com.ifba.personagem.entity.Personagem;
 
 import br.com.ifba.usuario.interfaces.Autenticavel;
 
+import java.util.Objects;
+
 
 
 // Classe de dominio que representa um Usuario do sistema
@@ -111,6 +113,18 @@ public class Usuario implements Autenticavel {
     public boolean autenticar(String login, String senha) {
         return this.login.equals(login) && this.senha.equals(senha);
     }
+    @Override
+    public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Usuario usuario = (Usuario) o;
+        return Objects.equals(login, usuario.login);
+}
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(login);
+}
 }
 
 
