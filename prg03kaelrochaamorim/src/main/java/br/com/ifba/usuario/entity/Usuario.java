@@ -1,46 +1,68 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package br.com.ifba.usuario.entity;
 
-//Importa classe Personagem
 import br.com.ifba.personagem.entity.Personagem;
-
 import br.com.ifba.usuario.interfaces.Autenticavel;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import java.util.Objects;
 
-
-
 // Classe de dominio que representa um Usuario do sistema
-// Adcionado o implements autenticavel
+@Entity
+@Table(name = "usuario")
 public class Usuario implements Autenticavel {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String nome;
+
+    @Column(unique = true)
     private String cpf;
+
     private String genero;
+
+    @Column(name = "data_nascimento")
     private String dataNascimento;
+
     private String telefone;
     private String email;
+
+    @Column(unique = true, nullable = false)
     private String login;
+
+    @Column(nullable = false)
     private String senha;
+
+    @Transient
     private Personagem personagem;
-    
-//Constructo sem atributos    
-    public Usuario() {} 
-    
-//Constructo com atributos    
+
+    // Construtor sem atributos
+    public Usuario() {}
+
+    // Construtor com atributos
     public Usuario(String nome, String cpf, String login, String senha) {
-    this.nome = nome;
-    this.cpf = cpf;
-    this.login = login;
-    this.senha = senha;
-}
+        this.nome = nome;
+        this.cpf = cpf;
+        this.login = login;
+        this.senha = senha;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
     public Personagem getPersonagem() {
         return personagem;
     }
-    
+
     public void setPersonagem(Personagem personagem) {
         this.personagem = personagem;
     }
@@ -108,27 +130,22 @@ public class Usuario implements Autenticavel {
     public String getSenha() {
         return senha;
     }
-    
+
     @Override
     public boolean autenticar(String login, String senha) {
         return this.login.equals(login) && this.senha.equals(senha);
     }
+
     @Override
     public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Usuario usuario = (Usuario) o;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Usuario usuario = (Usuario) o;
         return Objects.equals(login, usuario.login);
-}
+    }
 
     @Override
     public int hashCode() {
         return Objects.hash(login);
+    }
 }
-}
-
-
-/**
- *
- * @author milar
- */
