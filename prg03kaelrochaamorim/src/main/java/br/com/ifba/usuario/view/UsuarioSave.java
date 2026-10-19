@@ -6,6 +6,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
+//Testar se o caminho do banco ta certo
 public class UsuarioSave {
 
     public static void main(String[] args) {
