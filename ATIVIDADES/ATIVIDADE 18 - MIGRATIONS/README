@@ -1,1 +1,15 @@
+# Atividade 18 - Migrations (Flyway)
 
+Task 01: Flyway configurado no pom.xml (flyway-core e flyway-database-postgresql). As migrations ficam em src/main/resources/db/migration e o migrate() roda no JPAUtil, antes da criação do EntityManagerFactory. As credenciais ficam no db.properties, que está no .gitignore (o repositório tem só o db.properties.exemplo).
+
+Task 02: V1 cria a tabela usuario, com SQL escrito à mão: tipos e restrições definidos por mim (PK identity, login e senha NOT NULL, login e cpf UNIQUE).
+
+Task 03: V2 adiciona a coluna ativo (BOOLEAN NOT NULL DEFAULT TRUE). V3 adiciona a restrição UNIQUE no email. A entidade Usuario foi atualizada para refletir as duas.
+
+Task 04: hbm2ddl.auto alterado para validate. A aplicação subiu sem erro, então não houve divergência entre a entidade e as migrations.
+
+Task 05: o banco prg03 foi apagado (DROP DATABASE), recriado vazio e a aplicação foi executada. As três migrations foram aplicadas em sequência (print abaixo).
+
+[flyway_schema_history](print)
+
+Task 06: [resultado dos testes](print)
