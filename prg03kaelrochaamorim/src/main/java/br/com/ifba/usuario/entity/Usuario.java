@@ -33,6 +33,9 @@ public class Usuario implements Autenticavel {
     private String dataNascimento;
 
     private String telefone;
+
+    // UNIQUE criado na migration V3
+    @Column(unique = true)
     private String email;
 
     @Column(unique = true, nullable = false)
@@ -40,6 +43,10 @@ public class Usuario implements Autenticavel {
 
     @Column(nullable = false)
     private String senha;
+
+    // Coluna criada na migration V2
+    @Column(nullable = false)
+    private boolean ativo = true;
 
     @Transient
     private Personagem personagem;
@@ -99,6 +106,10 @@ public class Usuario implements Autenticavel {
         this.senha = senha;
     }
 
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
+
     public String getNome() {
         return nome;
     }
@@ -129,6 +140,10 @@ public class Usuario implements Autenticavel {
 
     public String getSenha() {
         return senha;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
     }
 
     @Override
