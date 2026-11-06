@@ -1,4 +1,5 @@
 package br.com.ifba.usuario.entity;
+import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,11 +37,23 @@ public class RepositorioUsuarioEmMemoriaTest {
     }
 
     @Test
-    void buscarPorLogin_comLoginInexistente_deveDevolverNull() {
-        RepositorioUsuarioEmMemoria repositorio = new RepositorioUsuarioEmMemoria();
+void buscarPorLogin_comLoginInexistente_deveLancarExcecao() {
+    RepositorioUsuarioEmMemoria repositorio = new RepositorioUsuarioEmMemoria();
 
-        assertNull(repositorio.buscarPorLogin("naoExiste"));
-    }
+    assertThrows(UsuarioNaoEncontradoException.class,
+            () -> repositorio.buscarPorLogin("naoExiste"));
+}
+
+@Test
+void buscarPorLogin_comLoginExistente_naoDeveLancarExcecao() {
+    RepositorioUsuarioEmMemoria repositorio = new RepositorioUsuarioEmMemoria();
+    Usuario usuario = new Usuario();
+    usuario.setLogin("milar");
+    usuario.setSenha("1234");
+    repositorio.cadastrar(usuario);
+
+    assertDoesNotThrow(() -> repositorio.buscarPorLogin("milar"));
+}
 
     @Test
     void cadastrar_comLoginDuplicado_deveLancarExcecao() {
