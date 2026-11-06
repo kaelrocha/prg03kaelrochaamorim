@@ -1,12 +1,13 @@
 package br.com.ifba.usuario.view;
 
+import br.com.ifba.usuario.dao.UsuarioDAO;
 import br.com.ifba.usuario.entity.Usuario;
+import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -15,19 +16,19 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.RowFilter;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
-// Tela de listagem de Usuario (apenas componentes, sem persistência)
+// Tela de listagem de Usuario
 public class UsuarioListar extends JFrame {
 
     private static final int COL_EDITAR = 3;
     private static final int COL_REMOVER = 4;
 
-    private final List<Usuario> usuarios = new ArrayList<>();
+    private List<Usuario> usuarios = new ArrayList<>();
+    private final UsuarioDAO dao = new UsuarioDAO();
     private final JTextField txtBusca = new JTextField(20);
     private final JButton btnAdicionar = new JButton("+ Novo usuário");
     private final DefaultTableModel modelo;
@@ -52,12 +53,6 @@ public class UsuarioListar extends JFrame {
         sorter = new TableRowSorter<>(modelo);
         tabela.setRowSorter(sorter);
 
-        // Dados fictícios (sem persistência ainda)
-        usuarios.add(criar("Ana Souza", "ana", "ana@email.com"));
-        usuarios.add(criar("Bruno Lima", "bruno", "bruno@email.com"));
-        usuarios.add(criar("Carla Dias", "carla", "carla@email.com"));
-        carregarTabela();
-
         JPanel topo = new JPanel(new BorderLayout(10, 10));
         topo.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
         topo.add(txtBusca, BorderLayout.WEST);
@@ -71,12 +66,21 @@ public class UsuarioListar extends JFrame {
         add(centro, BorderLayout.CENTER);
 
         configurarEventos();
+        recarregar();
     }
 
-    private Usuario criar(String nome, String login, String email) {
-        Usuario u = new Usuario(nome, null, login, "senha-ficticia");
-        u.setEmail(email);
-        return u;
+    // Busca no banco (todos, ou filtrando por nome com JPQL) e atualiza a tabela.
+    // É público porque o formulário chama depois de salvar.
+    public void recarregar() {
+        try {
+            String texto = txtBusca.getText().trim();
+            usuarios = texto.isEmpty() ? dao.listarTodos() : dao.buscarPorNome(texto);
+            carregarTabela();
+        } catch (RuntimeException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Erro ao carregar usuários: " + e.getMessage(),
+                    "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     // Senha, CPF, telefone e nascimento ficam de fora da listagem
@@ -89,16 +93,11 @@ public class UsuarioListar extends JFrame {
     }
 
     private void configurarEventos() {
-        // Busca: filtra as linhas exibidas
+        // Busca: a cada alteração do texto, consulta o banco (JPQL com where)
         txtBusca.getDocument().addDocumentListener(new DocumentListener() {
-            private void filtrar() {
-                String texto = txtBusca.getText().trim();
-                sorter.setRowFilter(texto.isEmpty() ? null
-                        : RowFilter.regexFilter("(?i)" + Pattern.quote(texto)));
-            }
-            @Override public void insertUpdate(DocumentEvent e) { filtrar(); }
-            @Override public void removeUpdate(DocumentEvent e) { filtrar(); }
-            @Override public void changedUpdate(DocumentEvent e) { filtrar(); }
+            @Override public void insertUpdate(DocumentEvent e) { recarregar(); }
+            @Override public void removeUpdate(DocumentEvent e) { recarregar(); }
+            @Override public void changedUpdate(DocumentEvent e) { recarregar(); }
         });
 
         // Abre o formulário de cadastro
@@ -124,7 +123,17 @@ public class UsuarioListar extends JFrame {
                             "Confirmar exclusão",
                             JOptionPane.YES_NO_OPTION);
                     if (opcao == JOptionPane.YES_OPTION) {
-                        // TODO: exclusão real fica para a Parte 2
+                        try {
+                            dao.excluir(selecionado.getId());
+                            recarregar();
+                        } catch (UsuarioNaoEncontradoException ex) {
+                            JOptionPane.showMessageDialog(UsuarioListar.this, ex.getMessage(),
+                                    "Erro", JOptionPane.ERROR_MESSAGE);
+                        } catch (RuntimeException ex) {
+                            JOptionPane.showMessageDialog(UsuarioListar.this,
+                                    "Não foi possível excluir: " + ex.getMessage(),
+                                    "Erro", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
                 }
             }

@@ -1,8 +1,8 @@
 package br.com.ifba.usuario.view;
 
+import br.com.ifba.usuario.dao.UsuarioDAO;
 import br.com.ifba.usuario.entity.Usuario;
 import java.awt.Component;
-import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -15,10 +15,12 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-// Tela de cadastro e edição de Usuario (apenas componentes, sem persistência)
+// Tela de cadastro e edição de Usuario
 public class UsuarioFormulario extends JDialog {
 
     private final Usuario usuario; // null = cadastro, preenchido = edição
+    private final UsuarioListar listar;
+    private final UsuarioDAO dao = new UsuarioDAO();
 
     private final JTextField txtNome = new JTextField(20);
     private final JTextField txtCpf = new JTextField(20);
@@ -31,14 +33,15 @@ public class UsuarioFormulario extends JDialog {
     private final JPasswordField txtSenha = new JPasswordField(20);
 
     // Cadastro
-    public UsuarioFormulario(Frame pai) {
+    public UsuarioFormulario(UsuarioListar pai) {
         this(pai, null);
     }
 
     // Edição (ou cadastro, se usuario for null)
-    public UsuarioFormulario(Frame pai, Usuario usuario) {
+    public UsuarioFormulario(UsuarioListar pai, Usuario usuario) {
         super(pai, usuario == null ? "Novo usuário" : "Editar usuário", true);
         this.usuario = usuario;
+        this.listar = pai;
         montarTela();
         if (usuario != null) {
             preencherCampos();
@@ -96,12 +99,44 @@ public class UsuarioFormulario extends JDialog {
     }
 
     private void salvar() {
-        if (txtNome.getText().isBlank() || txtLogin.getText().isBlank()) {
-            JOptionPane.showMessageDialog(this, "Nome e login são obrigatórios.");
+        String senha = new String(txtSenha.getPassword());
+
+        // no cadastro a senha é obrigatória; na edição, vazio = manter a atual
+        if (txtNome.getText().isBlank() || txtLogin.getText().isBlank()
+                || (usuario == null && senha.isBlank())) {
+            JOptionPane.showMessageDialog(this,
+                    "Nome e login são obrigatórios (e a senha, no cadastro).");
             return;
         }
-        // TODO: a persistência (salvar/atualizar no banco) fica para a Parte 2
-        JOptionPane.showMessageDialog(this, "Tela pronta. Persistência na Parte 2.");
-        dispose();
+
+        Usuario alvo = (usuario == null) ? new Usuario() : usuario;
+        alvo.setNome(txtNome.getText().trim());
+
+        String cpf = txtCpf.getText().trim();
+        alvo.setCpf(cpf.isEmpty() ? null : cpf); // o Postgres aceita vários NULL em coluna unique
+
+        alvo.setGenero((String) cbGenero.getSelectedItem());
+        alvo.setDataNascimento(txtNascimento.getText().trim());
+        alvo.setTelefone(txtTelefone.getText().trim());
+        alvo.setEmail(txtEmail.getText().trim());
+        alvo.setLogin(txtLogin.getText().trim());
+        if (!senha.isBlank()) {
+            alvo.setSenha(senha);
+        }
+
+        try {
+            if (usuario == null) {
+                dao.salvar(alvo);      // persist
+            } else {
+                dao.atualizar(alvo);   // merge
+            }
+            listar.recarregar();
+            dispose();
+        } catch (RuntimeException e) {
+            // não fecha o diálogo: o usuário vê que não gravou
+            JOptionPane.showMessageDialog(this,
+                    "Não foi possível salvar: " + e.getMessage(),
+                    "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
