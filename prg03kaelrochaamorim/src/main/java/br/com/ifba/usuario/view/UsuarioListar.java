@@ -1,8 +1,10 @@
 package br.com.ifba.usuario.view;
 
-import br.com.ifba.usuario.dao.UsuarioDAO;
+import br.com.ifba.infrastructure.exception.PersistenciaException;
+import br.com.ifba.usuario.dao.UsuarioDao;
+import br.com.ifba.usuario.dao.UsuarioIDao;
+
 import br.com.ifba.usuario.entity.Usuario;
-import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -28,7 +30,7 @@ public class UsuarioListar extends JFrame {
     private static final int COL_REMOVER = 4;
 
     private List<Usuario> usuarios = new ArrayList<>();
-    private final UsuarioDAO dao = new UsuarioDAO();
+    private final UsuarioIDao dao = new UsuarioDao();
     private final JTextField txtBusca = new JTextField(20);
     private final JButton btnAdicionar = new JButton("+ Novo usuário");
     private final DefaultTableModel modelo;
@@ -74,7 +76,7 @@ public class UsuarioListar extends JFrame {
     public void recarregar() {
         try {
             String texto = txtBusca.getText().trim();
-            usuarios = texto.isEmpty() ? dao.listarTodos() : dao.buscarPorNome(texto);
+            usuarios = texto.isEmpty() ? dao.findAll() : dao.findByNome(texto);
             carregarTabela();
         } catch (RuntimeException e) {
             JOptionPane.showMessageDialog(this,
@@ -123,17 +125,13 @@ public class UsuarioListar extends JFrame {
                             "Confirmar exclusão",
                             JOptionPane.YES_NO_OPTION);
                     if (opcao == JOptionPane.YES_OPTION) {
-                        try {
-                            dao.excluir(selecionado.getId());
+                          try {
+                              dao.delete(selecionado);
                             recarregar();
-                        } catch (UsuarioNaoEncontradoException ex) {
+                          } catch (PersistenciaException ex) {
                             JOptionPane.showMessageDialog(UsuarioListar.this, ex.getMessage(),
-                                    "Erro", JOptionPane.ERROR_MESSAGE);
-                        } catch (RuntimeException ex) {
-                            JOptionPane.showMessageDialog(UsuarioListar.this,
-                                    "Não foi possível excluir: " + ex.getMessage(),
-                                    "Erro", JOptionPane.ERROR_MESSAGE);
-                        }
+                            "Erro", JOptionPane.ERROR_MESSAGE);
+                          }
                     }
                 }
             }

@@ -1,6 +1,9 @@
 package br.com.ifba.usuario.view;
 
-import br.com.ifba.usuario.dao.UsuarioDAO;
+import br.com.ifba.usuario.dao.UsuarioDao;
+import br.com.ifba.usuario.dao.UsuarioIDao;
+import br.com.ifba.infrastructure.exception.PersistenciaException;
+
 import br.com.ifba.usuario.entity.Usuario;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
@@ -20,7 +23,7 @@ public class UsuarioFormulario extends JDialog {
 
     private final Usuario usuario; // null = cadastro, preenchido = edição
     private final UsuarioListar listar;
-    private final UsuarioDAO dao = new UsuarioDAO();
+    private final UsuarioIDao dao = new UsuarioDao();
 
     private final JTextField txtNome = new JTextField(20);
     private final JTextField txtCpf = new JTextField(20);
@@ -113,12 +116,13 @@ public class UsuarioFormulario extends JDialog {
         alvo.setNome(txtNome.getText().trim());
 
         String cpf = txtCpf.getText().trim();
-        alvo.setCpf(cpf.isEmpty() ? null : cpf); // o Postgres aceita vários NULL em coluna unique
+        alvo.setCpf(cpf.isEmpty() ? null : cpf); 
 
         alvo.setGenero((String) cbGenero.getSelectedItem());
         alvo.setDataNascimento(txtNascimento.getText().trim());
         alvo.setTelefone(txtTelefone.getText().trim());
-        alvo.setEmail(txtEmail.getText().trim());
+        String email = txtEmail.getText().trim();
+        alvo.setEmail(email.isEmpty() ? null : email); 
         alvo.setLogin(txtLogin.getText().trim());
         if (!senha.isBlank()) {
             alvo.setSenha(senha);
@@ -126,17 +130,16 @@ public class UsuarioFormulario extends JDialog {
 
         try {
             if (usuario == null) {
-                dao.salvar(alvo);      // persist
+                dao.save(alvo);      // persist
             } else {
-                dao.atualizar(alvo);   // merge
+                dao.update(alvo);   // merge
             }
             listar.recarregar();
             dispose();
-        } catch (RuntimeException e) {
-            // não fecha o diálogo: o usuário vê que não gravou
-            JOptionPane.showMessageDialog(this,
-                    "Não foi possível salvar: " + e.getMessage(),
-                    "Erro", JOptionPane.ERROR_MESSAGE);
-        }
+          } catch (PersistenciaException e) {
+      // não fecha o diálogo: o usuário vê que não gravou
+              JOptionPane.showMessageDialog(this, e.getMessage(),
+              "Erro", JOptionPane.ERROR_MESSAGE);
+          }
     }
 }

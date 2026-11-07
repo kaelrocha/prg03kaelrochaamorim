@@ -1,13 +1,11 @@
 package br.com.ifba.usuario.entity;
 
+import br.com.ifba.infrastructure.entity.PersistenceEntity;
 import br.com.ifba.personagem.entity.Personagem;
 import br.com.ifba.usuario.interfaces.Autenticavel;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
@@ -16,11 +14,7 @@ import java.util.Objects;
 // Classe de dominio que representa um Usuario do sistema
 @Entity
 @Table(name = "usuario")
-public class Usuario implements Autenticavel {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Usuario extends PersistenceEntity implements Autenticavel {
 
     private String nome;
 
@@ -60,10 +54,6 @@ public class Usuario implements Autenticavel {
         this.cpf = cpf;
         this.login = login;
         this.senha = senha;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public Personagem getPersonagem() {
