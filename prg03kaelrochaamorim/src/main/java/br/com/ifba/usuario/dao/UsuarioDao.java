@@ -7,11 +7,12 @@ import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class UsuarioDao extends GenericDao<Usuario> implements UsuarioIDao {
 
-    public UsuarioDao() {
-        super(Usuario.class);
+    public UsuarioDao(Supplier<EntityManager> fornecedorEntityManager) {
+        super(Usuario.class, fornecedorEntityManager);
     }
 
     @Override
