@@ -6,8 +6,6 @@ import br.com.ifba.usuario.entity.Usuario;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,24 +16,16 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
-// Tela de listagem de Usuario
 public class UsuarioListar extends JFrame {
 
-    private static final int COL_EDITAR = 3;
-    private static final int COL_REMOVER = 4;
-
-    private List<Usuario> usuarios = new ArrayList<>();
     private final UsuarioIController controller;
     private final JTextField txtBusca = new JTextField(20);
     private final JButton btnAdicionar = new JButton("+ Novo usuário");
-    private final DefaultTableModel modelo;
+    private final UsuarioTabelaModelo modelo;
     private final JTable tabela;
-    private final TableRowSorter<DefaultTableModel> sorter;
 
-    // o Controller chega pelo construtor
 public UsuarioListar(UsuarioIController controller) {
     super("Usuários");
     this.controller = controller;
@@ -43,17 +33,10 @@ public UsuarioListar(UsuarioIController controller) {
     setSize(700, 420);
     setLocationRelativeTo(null);
 
-    modelo = new DefaultTableModel(
-        new Object[]{"NOME", "LOGIN", "E-MAIL", "EDITAR", "REMOVER"}, 0) {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false;
-        }
-        };
+    modelo = new UsuarioTabelaModelo();
     tabela = new JTable(modelo);
     tabela.setRowHeight(28);
-    sorter = new TableRowSorter<>(modelo);
-    tabela.setRowSorter(sorter);
+    tabela.setRowSorter(new TableRowSorter<>(modelo));
 
     JPanel topo = new JPanel(new BorderLayout(10, 10));
     topo.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
@@ -76,20 +59,10 @@ public UsuarioListar(UsuarioIController controller) {
 public void recarregar() {
     try {
         String texto = txtBusca.getText().trim();
-        usuarios = texto.isEmpty() ? controller.findAll() : controller.findByNome(texto);
-        carregarTabela();
+        modelo.atualizarUsuarios(texto.isEmpty() ? controller.findAll() : controller.findByNome(texto));
     } catch (PersistenciaException e) {
         JOptionPane.showMessageDialog(this, e.getMessage(),
             "Erro", JOptionPane.ERROR_MESSAGE);
-    }
-}
-
-// Senha, CPF, telefone e nascimento ficam de fora da listagem
-private void carregarTabela() {
-    modelo.setRowCount(0);
-    for (Usuario u : usuarios) {
-        modelo.addRow(new Object[]{
-            u.getNome(), u.getLogin(), u.getEmail(), "Editar", "Remover"});
     }
 }
 
@@ -110,12 +83,12 @@ private void configurarEventos() {
             int coluna = tabela.columnAtPoint(e.getPoint());
         if (linhaVisual < 0) return;
             int linha = tabela.convertRowIndexToModel(linhaVisual);
-            Usuario selecionado = usuarios.get(linha);
+            Usuario selecionado = modelo.usuarioNaLinha(linha);
 
-        if (coluna == COL_EDITAR) {
+        if (coluna == UsuarioTabelaModelo.COL_EDITAR) {
                 new UsuarioFormulario(UsuarioListar.this, controller, selecionado)
                         .setVisible(true);
-            } else if (coluna == COL_REMOVER) {
+            } else if (coluna == UsuarioTabelaModelo.COL_REMOVER) {
             int opcao = JOptionPane.showConfirmDialog(
                     UsuarioListar.this,
                     "Deseja excluir o usuário " + selecionado.getNome() + "?",

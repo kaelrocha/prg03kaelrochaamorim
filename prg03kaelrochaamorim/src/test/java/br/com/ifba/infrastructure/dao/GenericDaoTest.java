@@ -15,13 +15,13 @@ import static org.junit.jupiter.api.Assertions.*;
 public class GenericDaoTest {
 
     // registra o que o DAO fez com o EntityManager falso
-    private static class Registro {
-        boolean rollbackChamado;
-        boolean fechado;
+    private static class RegistroOperacoesJpa {
+        boolean rollbackExecutado;
+        boolean entityManagerFechado;
     }
 
     // EntityManager falso: persist, merge, remove e find falham
-    private EntityManager emQueFalha(Registro registro) {
+    private EntityManager criarEntityManagerComFalha(RegistroOperacoesJpa registro) {
         EntityTransaction transacao = (EntityTransaction) Proxy.newProxyInstance(
                 getClass().getClassLoader(), new Class<?>[]{EntityTransaction.class},
                 (proxy, metodo, args) -> {
@@ -29,7 +29,7 @@ public class GenericDaoTest {
                         case "isActive":
                             return true;
                         case "rollback":
-                            registro.rollbackChamado = true;
+                            registro.rollbackExecutado = true;
                             return null;
                         default:
                             return null; // begin, commit
@@ -43,7 +43,7 @@ public class GenericDaoTest {
                         case "getTransaction":
                             return transacao;
                         case "close":
-                            registro.fechado = true;
+                            registro.entityManagerFechado = true;
                             return null;
                         case "persist":
                         case "merge":
@@ -56,60 +56,55 @@ public class GenericDaoTest {
                 });
     }
 
-    private GenericDao<Usuario> daoComFalha(Registro registro) {
-        return new GenericDao<Usuario>(Usuario.class) {
-            @Override
-            protected EntityManager criarEntityManager() {
-                return emQueFalha(registro);
-            }
-        };
+    private GenericDao<Usuario> criarDaoComFalhaSimulada(RegistroOperacoesJpa registro) {
+        return new GenericDao<>(Usuario.class, () -> criarEntityManagerComFalha(registro));
     }
 
     @Test
     void save_quandoFalha_deveLancarPersistenciaException() {
-        Registro registro = new Registro();
+        RegistroOperacoesJpa registro = new RegistroOperacoesJpa();
 
         assertThrows(PersistenciaException.class,
-                () -> daoComFalha(registro).save(new Usuario()));
+                () -> criarDaoComFalhaSimulada(registro).save(new Usuario()));
     }
 
     @Test
     void save_quandoFalha_deveFazerRollbackEFecharOEntityManager() {
-        Registro registro = new Registro();
+        RegistroOperacoesJpa registro = new RegistroOperacoesJpa();
 
         assertThrows(PersistenciaException.class,
-                () -> daoComFalha(registro).save(new Usuario()));
+                () -> criarDaoComFalhaSimulada(registro).save(new Usuario()));
 
-        assertTrue(registro.rollbackChamado);
-        assertTrue(registro.fechado);
+        assertTrue(registro.rollbackExecutado);
+        assertTrue(registro.entityManagerFechado);
     }
 
     @Test
     void update_quandoFalha_deveLancarPersistenciaException() {
-        Registro registro = new Registro();
+        RegistroOperacoesJpa registro = new RegistroOperacoesJpa();
 
         assertThrows(PersistenciaException.class,
-                () -> daoComFalha(registro).update(new Usuario()));
-        assertTrue(registro.rollbackChamado);
-        assertTrue(registro.fechado);
+                () -> criarDaoComFalhaSimulada(registro).update(new Usuario()));
+        assertTrue(registro.rollbackExecutado);
+        assertTrue(registro.entityManagerFechado);
     }
 
     @Test
     void delete_quandoFalha_deveLancarPersistenciaException() {
-        Registro registro = new Registro();
+        RegistroOperacoesJpa registro = new RegistroOperacoesJpa();
 
         assertThrows(PersistenciaException.class,
-                () -> daoComFalha(registro).delete(new Usuario()));
-        assertTrue(registro.rollbackChamado);
-        assertTrue(registro.fechado);
+                () -> criarDaoComFalhaSimulada(registro).delete(new Usuario()));
+        assertTrue(registro.rollbackExecutado);
+        assertTrue(registro.entityManagerFechado);
     }
 
     @Test
     void findById_quandoFalha_deveLancarPersistenciaEFecharOEntityManager() {
-        Registro registro = new Registro();
+        RegistroOperacoesJpa registro = new RegistroOperacoesJpa();
 
         assertThrows(PersistenciaException.class,
-                () -> daoComFalha(registro).findById(1L));
-        assertTrue(registro.fechado);
+                () -> criarDaoComFalhaSimulada(registro).findById(1L));
+        assertTrue(registro.entityManagerFechado);
     }
 }

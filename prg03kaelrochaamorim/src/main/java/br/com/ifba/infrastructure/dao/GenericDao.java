@@ -2,21 +2,23 @@ package br.com.ifba.infrastructure.dao;
 
 import br.com.ifba.infrastructure.entity.PersistenceEntity;
 import br.com.ifba.infrastructure.exception.PersistenciaException;
-import br.com.ifba.infrastructure.util.JPAUtil;
 import jakarta.persistence.EntityManager;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class GenericDao<Entity extends PersistenceEntity> implements GenericIDao<Entity> {
 
     private final Class<Entity> tipo;
+    private final Supplier<EntityManager> fornecedorEntityManager;
 
-    public GenericDao(Class<Entity> tipo) {
+    public GenericDao(Class<Entity> tipo, Supplier<EntityManager> fornecedorEntityManager) {
         this.tipo = tipo;
+        this.fornecedorEntityManager = fornecedorEntityManager;
     }
 
-    // ponto de extensão: os testes sobrescrevem para não depender do banco
+    // Cada operação recebe seu próprio EntityManager para poder fechá-lo ao final.
     protected EntityManager criarEntityManager() {
-        return JPAUtil.getEntityManager();
+        return fornecedorEntityManager.get();
     }
 
     protected Class<Entity> getTipo() {
