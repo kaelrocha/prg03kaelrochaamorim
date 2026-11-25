@@ -1,5 +1,10 @@
 package br.com.ifba.usuario.view;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import br.com.ifba.infrastructure.exception.PersistenciaException;
 import br.com.ifba.usuario.controller.UsuarioIController;
 import br.com.ifba.usuario.entity.Usuario;
@@ -18,17 +23,26 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.TableRowSorter;
 
+@Component
+@Scope("prototype")
 public class UsuarioListar extends JFrame {
 
     private final UsuarioIController controller;
+    private final ObjectProvider<UsuarioFormulario> formularios;
     private final JTextField txtBusca = new JTextField(20);
     private final JButton btnAdicionar = new JButton("+ Novo usuário");
     private final UsuarioTabelaModelo modelo;
     private final JTable tabela;
 
 public UsuarioListar(UsuarioIController controller) {
+    this(controller, null);
+}
+
+@Autowired
+public UsuarioListar(UsuarioIController controller, ObjectProvider<UsuarioFormulario> formularios) {
     super("Usuários");
     this.controller = controller;
+    this.formularios = formularios;
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     setSize(700, 420);
     setLocationRelativeTo(null);
@@ -66,6 +80,13 @@ public void recarregar() {
     }
 }
 
+private void abrirFormulario(Usuario usuario) {
+    UsuarioFormulario formulario = formularios == null
+            ? new UsuarioFormulario(this, controller, usuario)
+            : formularios.getObject(this, controller, usuario);
+    formulario.setVisible(true);
+}
+
 private void configurarEventos() {
     txtBusca.getDocument().addDocumentListener(new DocumentListener() {
         @Override public void insertUpdate(DocumentEvent e) { recarregar(); }
@@ -74,7 +95,7 @@ private void configurarEventos() {
     });
 
     btnAdicionar.addActionListener(e ->
-        new UsuarioFormulario(this, controller).setVisible(true));
+        abrirFormulario(null));
 
     tabela.addMouseListener(new MouseAdapter() {
         @Override
@@ -86,8 +107,7 @@ private void configurarEventos() {
             Usuario selecionado = modelo.usuarioNaLinha(linha);
 
         if (coluna == UsuarioTabelaModelo.COL_EDITAR) {
-                new UsuarioFormulario(UsuarioListar.this, controller, selecionado)
-                        .setVisible(true);
+                abrirFormulario(selecionado);
             } else if (coluna == UsuarioTabelaModelo.COL_REMOVER) {
             int opcao = JOptionPane.showConfirmDialog(
                     UsuarioListar.this,

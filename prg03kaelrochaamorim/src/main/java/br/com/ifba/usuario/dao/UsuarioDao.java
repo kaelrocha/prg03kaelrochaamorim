@@ -1,5 +1,7 @@
 package br.com.ifba.usuario.dao;
 
+import org.springframework.stereotype.Repository;
+
 import br.com.ifba.infrastructure.dao.GenericDao;
 import br.com.ifba.infrastructure.exception.PersistenciaException;
 import br.com.ifba.usuario.entity.Usuario;
@@ -9,6 +11,7 @@ import jakarta.persistence.NoResultException;
 import java.util.List;
 import java.util.function.Supplier;
 
+@Repository
 public class UsuarioDao extends GenericDao<Usuario> implements UsuarioIDao {
 
     public UsuarioDao(Supplier<EntityManager> fornecedorEntityManager) {

@@ -1,55 +1,53 @@
 package br.com.ifba.infrastructure.util;
 
+import br.com.ifba.usuario.entity.Usuario;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
+import java.util.function.Supplier;
 import org.flywaydb.core.Flyway;
+import org.hibernate.cfg.Configuration;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.core.env.Environment;
 
+@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
 public class JPAUtil {
 
-    private static final EntityManagerFactory FACTORY;
+    @Bean(destroyMethod = "close")
+    @Lazy
+    EntityManagerFactory entityManagerFactory(Environment ambiente) {
+        String url = ambiente.getRequiredProperty("app.datasource.url");
+        String usuario = ambiente.getRequiredProperty("app.datasource.username");
+        String senha = ambiente.getRequiredProperty("app.datasource.password");
 
-    // Executado uma única vez, quando a classe é carregada.
-    // Ordem importa: primeiro o Flyway cria/atualiza o schema,
-    // depois o Hibernate sobe (e, com validate, confere as tabelas).
-    static {
-        Properties db = carregarCredenciais();
-
+        // O Hibernate valida as tabelas depois que o Flyway aplica as migrations.
         Flyway.configure()
-                .dataSource(
-                        db.getProperty("db.url"),
-                        db.getProperty("db.user"),
-                        db.getProperty("db.password"))
+                .dataSource(url, usuario, senha)
                 .locations("classpath:db/migration")
                 .load()
                 .migrate();
 
-        FACTORY = Persistence.createEntityManagerFactory("prg03PU");
+        Properties config = new Properties();
+        config.setProperty("jakarta.persistence.jdbc.driver",
+                ambiente.getRequiredProperty("app.datasource.driver"));
+        config.setProperty("jakarta.persistence.jdbc.url", url);
+        config.setProperty("jakarta.persistence.jdbc.user", usuario);
+        config.setProperty("jakarta.persistence.jdbc.password", senha);
+        config.setProperty("hibernate.hbm2ddl.auto",
+                ambiente.getRequiredProperty("app.jpa.schema"));
+        config.setProperty("hibernate.show_sql",
+                ambiente.getRequiredProperty("app.jpa.show-sql"));
+
+        return new Configuration()
+                .addAnnotatedClass(Usuario.class)
+                .setProperties(config)
+                .buildSessionFactory();
     }
 
-    private JPAUtil() {
-    }
-
-    public static EntityManager getEntityManager() {
-        return FACTORY.createEntityManager();
-    }
-
-    // As credenciais ficam em db.properties, que está no .gitignore
-    private static Properties carregarCredenciais() {
-        try (InputStream in = JPAUtil.class.getResourceAsStream("/db.properties")) {
-            if (in == null) {
-                throw new IllegalStateException(
-                        "Arquivo db.properties não encontrado em src/main/resources. "
-                        + "Copie o db.properties.exemplo e preencha com a sua conexão.");
-            }
-            Properties props = new Properties();
-            props.load(in);
-            return props;
-        } catch (IOException e) {
-            throw new IllegalStateException("Não foi possível ler o db.properties.", e);
-        }
+    @Bean
+    Supplier<EntityManager> fornecedorEntityManager(ObjectProvider<EntityManagerFactory> fabrica) {
+        return () -> fabrica.getObject().createEntityManager();
     }
 }

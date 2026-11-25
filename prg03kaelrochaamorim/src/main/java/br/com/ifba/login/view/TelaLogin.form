@@ -127,7 +127,7 @@
     <Component class="javax.swing.JLabel" name="lblLogo">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="2" name="C:\Users\milar\prg03kaelrochaamorim\prg03kaelrochaamorim\src\main\resources\br\com\ifba\login\imagens\logo_rpg_80x80.png"/>
+          <Image iconType="3" name="/br/com/ifba/login/imagens/logo_rpg_80x80.png"/>
         </Property>
       </Properties>
     </Component>

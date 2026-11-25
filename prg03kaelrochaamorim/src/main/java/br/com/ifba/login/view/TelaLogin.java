@@ -1,5 +1,10 @@
 package br.com.ifba.login.view;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+
 //Importa a classe Usuario
 import br.com.ifba.usuario.entity.Usuario;
 
@@ -19,15 +24,24 @@ import br.com.ifba.usuario.entity.Usuario;
  * @author milar
  */
 
+@Component
+@Scope("prototype")
 public class TelaLogin extends javax.swing.JFrame {
     
     
+    private final ObjectProvider<TelaCadastroUsuario> cadastros;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaLogin.class.getName());
 
     /**
      * Creates new form TelaLogin
      */
     public TelaLogin() {
+        this(null);
+    }
+
+    @Autowired
+    public TelaLogin(ObjectProvider<TelaCadastroUsuario> cadastros) {
+        this.cadastros = cadastros;
         initComponents();
     }
 
@@ -65,7 +79,7 @@ public class TelaLogin extends javax.swing.JFrame {
         btnEntrar.setText("Entrar");
         btnEntrar.addActionListener(this::btnEntrarActionPerformed);
 
-        lblLogo.setIcon(new javax.swing.ImageIcon("C:\\Users\\milar\\prg03kaelrochaamorim\\prg03kaelrochaamorim\\src\\main\\resources\\br\\com\\ifba\\login\\imagens\\logo_rpg_80x80.png")); // NOI18N
+        lblLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/ifba/login/imagens/logo_rpg_80x80.png"))); // NOI18N
 
         jLabel1.setText("<html>Não tem uma conta?<br><font color='blue'><u>Cadastre-se agora</u></font></center></html>");
         jLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -160,7 +174,7 @@ public class TelaLogin extends javax.swing.JFrame {
 
     private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
  // Vai pra tela de cadastro ao clicar no link 
-    TelaCadastroUsuario telaCadastro = new TelaCadastroUsuario(); 
+    TelaCadastroUsuario telaCadastro = cadastros == null ? new TelaCadastroUsuario() : cadastros.getObject();
     telaCadastro.setVisible(true); 
     this.dispose();
     }//GEN-LAST:event_jLabel1MouseClicked

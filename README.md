@@ -2,6 +2,12 @@
 
 Projeto para a conclusão da matéria de POO do Curso de ADS do IFBA
 
+## Executar no NetBeans
+
+Abra o módulo `prg03kaelrochaamorim` e use **Run Project**. O NetBeans executa `ProjetoApplication` e abre o login. Para abrir a listagem de usuários diretamente, execute `Main.java` com **Run File**.
+
+Para usar o PostgreSQL, crie `application-local.properties` ao lado do `pom.xml`. Preencha `app.datasource.username` e `app.datasource.password` com os dados da sua conexão. Se usar outro endereço, defina também `app.datasource.url`. O endereço padrão é `jdbc:postgresql://localhost:5432/prg03`. O arquivo local fica fora do Git.
+
 
 
 31/08/2026 - Fazendo alterações e confirmando com Pull Request.
