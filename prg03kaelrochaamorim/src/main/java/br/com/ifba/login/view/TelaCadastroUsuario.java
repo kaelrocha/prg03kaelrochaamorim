@@ -4,6 +4,11 @@
  */
 package br.com.ifba.login.view;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+
 //Importar o Validador de usuario
 import br.com.ifba.usuario.validar.ValidadorUsuario;
 
@@ -18,8 +23,11 @@ import br.com.ifba.usuario.entity.RepositorioUsuarioEmMemoria;
  *
  * @author milar
  */
+@Component
+@Scope("prototype")
 public class TelaCadastroUsuario extends javax.swing.JFrame {
     
+    private final ObjectProvider<TelaLogin> logins;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaCadastroUsuario.class.getName());
     private final RepositorioUsuarioEmMemoria repositorio = new RepositorioUsuarioEmMemoria();
 
@@ -27,6 +35,12 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
      * Creates new form TelaCadastroUsuario
      */
     public TelaCadastroUsuario() {
+        this(null);
+    }
+
+    @Autowired
+    public TelaCadastroUsuario(ObjectProvider<TelaLogin> logins) {
+        this.logins = logins;
         initComponents();
     }
 
@@ -282,7 +296,7 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     this.dispose();
 
     // abre a tela de login
-    TelaLogin telaLogin = new TelaLogin();
+    TelaLogin telaLogin = logins == null ? new TelaLogin() : logins.getObject();
     telaLogin.setVisible(true);
     
     }//GEN-LAST:event_btnCancelarCadastroMouseClicked

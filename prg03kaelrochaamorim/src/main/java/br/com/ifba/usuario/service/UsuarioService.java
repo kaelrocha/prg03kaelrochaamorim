@@ -1,10 +1,13 @@
 package br.com.ifba.usuario.service;
 
+import org.springframework.stereotype.Service;
+
 import br.com.ifba.usuario.dao.UsuarioIDao;
 import br.com.ifba.usuario.entity.Usuario;
 import br.com.ifba.usuario.exception.UsuarioInvalidoException;
 import java.util.List;
 
+@Service
 public class UsuarioService implements UsuarioIService {
 
     private final UsuarioIDao dao;

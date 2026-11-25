@@ -1,5 +1,7 @@
 package br.com.ifba.usuario.view;
 
+import org.springframework.context.annotation.Scope;
+
 import br.com.ifba.infrastructure.exception.PersistenciaException;
 import br.com.ifba.usuario.controller.UsuarioIController;
 import br.com.ifba.usuario.entity.Usuario;
@@ -18,6 +20,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 // Tela de cadastro e edição de Usuario
+@org.springframework.stereotype.Component
+@Scope("prototype")
 public class UsuarioFormulario extends JDialog {
 
     private final Usuario usuario; // null = cadastro, preenchido = edição
